@@ -20,6 +20,7 @@ class CreateMoviesTable extends Migration
             $table->text('overview');
             $table->date('release_date')->nullable();
             $table->double('vote_average', 1)->nullable();
+            $table->integer('popularity')->nullable();
             $table->timestamps();
         });
 

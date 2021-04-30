@@ -6,7 +6,7 @@ use Ghanem\Themoviedb\Models\Category;
 use Ghanem\Themoviedb\Models\Movie;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-// use GuzzleHttp\Client;
+use GuzzleHttp\Client;
 
 class ThemoviedbSeed extends Command
 {
@@ -73,7 +73,7 @@ class ThemoviedbSeed extends Command
     private function SeedTopRatedMovies()
     {
         $this->info('Seeding Top Rated Movies');
-        $client = new \GuzzleHttp\Client();
+        $client = new Client();
         $data = json_decode($client->get('https://api.themoviedb.org/3/movie/top_rated?api_key='.$this->key)->getBody(), true)['results'];
 
         $this->createMovies($data);
@@ -112,6 +112,7 @@ class ThemoviedbSeed extends Command
             'imdb_id' => $item['imdb_id'] ?? null,
             'release_date' => $item['release_date'],
             'vote_average' => $item['vote_average'],
+            'popularity' => $item['popularity'],
         ]);
         $movie->categories()->sync($item['genre_ids']);
     }
@@ -124,7 +125,7 @@ class ThemoviedbSeed extends Command
     private function SeedGenres()
     {
         $this->info('Seeding Top Rated Movies');
-        $client = new \GuzzleHttp\Client();
+        $client = new Client();
         $data = json_decode($client->get('https://api.themoviedb.org/3//genre/movie/list?api_key='.$this->key)->getBody(), true)['genres'];
 
         foreach($data as $item){

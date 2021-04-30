@@ -14,13 +14,13 @@ class MovieResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'id' => $this->id,
             'title' => $this->title,
             'overview' => $this->overview,
             'release_date' => $this->release_date,
             'vote_average' => $this->vote_average,
+            'popularity' => $this->popularity,
             'categories' => CategoryResource::collection($this->categories),
         ];
     }
