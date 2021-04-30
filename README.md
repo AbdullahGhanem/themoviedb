@@ -1,3 +1,7 @@
+# Laravel Package for Seed themoviedb
+
+
+[![Total Downloads](https://img.shields.io/packagist/dt/ghanem/themoviedb.svg?style=flat-square)](https://packagist.org/packages/ghanem/themoviedb)
 ## Installation
 
 You can install the package via composer:
