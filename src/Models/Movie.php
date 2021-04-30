@@ -17,7 +17,6 @@ class Movie extends Model
   	protected $fillable = [
 	  	'id',
 	  	'imdb_id',
-		'themoviedb_id',
 		'title',
 		'overview',
 		'release_date',
