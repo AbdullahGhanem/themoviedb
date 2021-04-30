@@ -1,0 +1,51 @@
+{
+    "name": "ghanem/themoviedb",
+    "description": "schedule movie seeder API Service from https://www.themoviedb.org",
+    "type": "laravel-package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "abdullah ghanem",
+            "email": "3bdullah.ghanem@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^7.3|^8.0",
+        "guzzlehttp/guzzle": "^7.3"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^6.0",
+        "phpunit/phpunit": "^9.5"
+    }, 
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Ghanem\\Themoviedb\\": "src/",
+            "Ghanem\\Themoviedb\\Database\\Factories\\": "database/factories"
+
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ghanem\\Themoviedb\\Tests\\": "tests"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ghanem\\Themoviedb\\ThemoviedbServiceProvider"
+            ],
+            "aliases": {
+                "Themoviedb": "Ghanem\\Themoviedb\\Facades\\Themoviedb"
+            }
+        }
+    }, 
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-f": "vendor/bin/phpunit --filter"
+    }
+}
