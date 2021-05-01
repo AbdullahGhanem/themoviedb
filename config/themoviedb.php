@@ -12,7 +12,11 @@ return [
     */
     'key' => env('THEMOVIEDB_KEY', ''),
 
+    'num_of_records' => env('THEMOVIEDB_NUM_OF_RECORDS', 98),
+
     'prefix' => '/',
 
 	'middleware' => ['web'],
+
+    'enable_queue' => env('THEMOVIEDB_ENABLE_QUEUE', false),
 ];

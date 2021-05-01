@@ -2,11 +2,12 @@
 
 namespace Ghanem\Themoviedb\Console;
 
+use Ghanem\Themoviedb\Jobs\CreateMovie;
 use Ghanem\Themoviedb\Models\Category;
 use Ghanem\Themoviedb\Models\Movie;
+use GuzzleHttp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use GuzzleHttp\Client;
 
 class ThemoviedbSeed extends Command
 {
@@ -18,6 +19,8 @@ class ThemoviedbSeed extends Command
     protected $signature = 'themoviedb:seed {type}';
 
     protected $key;
+
+    protected $num_of_records;
 
     /**
      * The console command description.
@@ -34,6 +37,7 @@ class ThemoviedbSeed extends Command
     public function __construct()
     {
         $this->key = config('themoviedb.key');
+        $this->num_of_records = config('themoviedb.num_of_records');
         parent::__construct();
     }
 
@@ -70,15 +74,35 @@ class ThemoviedbSeed extends Command
         }
     }
     
+    /**
+     * Seed Top Rated Movies.
+     *
+     * @return void
+     */
     private function SeedTopRatedMovies()
     {
         $this->info('Seeding Top Rated Movies');
-        $client = new Client();
-        $data = json_decode($client->get('https://api.themoviedb.org/3/movie/top_rated?api_key='.$this->key)->getBody(), true)['results'];
 
-        $this->createMovies($data);
+        $pages = ($this->num_of_records / 20 > 1) ? round($this->num_of_records / 20) : 1;
+        $number_items = $this->num_of_records % 20;
+
+        foreach (range(1, $pages) as $page) {
+            $client = new Client();
+            $data = json_decode($client->get("https://api.themoviedb.org/3/movie/top_rated?api_key=$this->key&page=$page")->getBody(), true)['results'];
+
+            if($number_items > 0)
+                $this->createMovies($data, $number_items);
+            else
+                $this->createMovies($data, $number_items);
+            
+        }
     }    
-
+    
+    /**
+     * Seed Recently Movies.
+     *
+     * @return void
+     */
     private function SeedRecentlyMovies()
     {
         $this->info('Seeding Recently Movies');
@@ -89,10 +113,12 @@ class ThemoviedbSeed extends Command
      *
      * @return array
      */
-    private function createMovies($movies)
+    private function createMovies($movies, $limit_number=null)
     {
-        foreach ($movies as $movie) {
-            $this->createMovie($movie);
+        foreach ($movies as $key => $movie) {
+            if($key+1 <= $limit_number || $limit_number == null){
+                $this->createMovie($movie);
+            }
         }
     }
 
@@ -103,18 +129,22 @@ class ThemoviedbSeed extends Command
      */
     private function createMovie($item)
     {
-        $movie = Movie::firstOrCreate([
-            'id' => $item['id'],
-        ],[ 
-            'id' => $item['id'],
-            'title' => $item['title'],
-            'overview' => $item['overview'],
-            'imdb_id' => $item['imdb_id'] ?? null,
-            'release_date' => $item['release_date'],
-            'vote_average' => $item['vote_average'],
-            'popularity' => $item['popularity'],
-        ]);
-        $movie->categories()->sync($item['genre_ids']);
+        if(config('themoviedb.enable_queue')){
+            dispatch(new CreateMovie($item));
+        }else{
+            $movie = Movie::firstOrCreate([
+                'id' => $item['id'],
+            ],[ 
+                'id' => $item['id'],
+                'title' => $item['title'],
+                'overview' => $item['overview'],
+                'imdb_id' => $item['imdb_id'] ?? null,
+                'release_date' => $item['release_date'],
+                'vote_average' => $item['vote_average'],
+                'popularity' => $item['popularity'],
+            ]);
+            $movie->categories()->sync($item['genre_ids']);
+        }
     }
 
     /**
