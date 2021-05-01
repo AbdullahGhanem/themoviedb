@@ -36,6 +36,19 @@ this package create command to seed Movies and Genres
 php artisan themoviedb:seed top_rated_movies
 ```
 
+to change Number of Records in **.env** add your num_of_records
+```bash
+THEMOVIEDB_NUM_OF_RECORDS=95
+```
+> by default 100 recourds
+
+to use laravel Queue to handle the seeder task just enable it in **.env**:
+
+```bash
+THEMOVIEDB_ENABLE_QUEUE=true
+```
+> by default false
+
 ## Endpoint Movies
 
 you can access Endpoint form 
@@ -50,3 +63,13 @@ return [
     'middleware' => ['web'],
 ];
 ```
+## schedule seed movies
+
+to schedule seed movies we need to use  **php cron job** and laravel Task Scheduling.
+in `app/Console/Kernel.php` file's `schedule` method just add 
+
+```bash
+     $schedule->command('themoviedb:seed top_rated_movies --force')->daily();
+```
+
+and can change daily to ather method that laravel accepts [here](https://laravel.com/docs/5.8/scheduling#schedule-frequency-options) 
